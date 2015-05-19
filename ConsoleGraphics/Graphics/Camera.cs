@@ -13,10 +13,11 @@ namespace ConsoleGraphics.Graphics
     {
         public Camera(Space space) : base(space)
         {
-            EventManager.Hook(UserDraw, typeof(UserDrawEvent));
+            EventManager.Hook(Level, "Draw", Draw);
+            Size = new Vector2(Console.WindowWidth, Console.WindowHeight);
         }
 
-        private void UserDraw(Event e)
+        private void Draw(object sender, Event e)
         {
             // This may seem like a cheap or dirty way to do this,
             // But it's actually the cheapest way of calculating the viewport.
@@ -29,7 +30,8 @@ namespace ConsoleGraphics.Graphics
                 go.Rotation += this.Rotation;
             }
 
-            EventManager.Fire(new DrawEvent());
+            Space.Objects = Space.Objects.OrderBy(go => go.Depth).ToList();
+            EventManager.Fire(this.Space, "Draw", new Event());
 
             foreach (GameObject go in Space.Objects)
             {

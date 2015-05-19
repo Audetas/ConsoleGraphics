@@ -11,14 +11,18 @@ namespace ConsoleGraphics.Game
 {
     public class Space
     {
+        public Level Level;
         public Camera Camera;
+        public List<UIObject> UIObjects;
         public List<GameObject> Objects;
 
-        public Space()
+        public Space(Level level)
         {
+            Level = level;
             Camera = new Camera(this);
+            UIObjects = new List<UIObject>();
             Objects = new List<GameObject>();
-            EventManager.Hook(UserUpdate, typeof(UserUpdateEvent));
+            EventManager.Hook(level, "Update", Update);
         }
 
         public GameObject Create()
@@ -35,9 +39,18 @@ namespace ConsoleGraphics.Game
             return o;
         }
 
-        private void UserUpdate(Event e)
+        private void Update(object sender, Event e)
         {
-            EventManager.Fire(new UpdateEvent());
+            // UI Updates
+            foreach (UIObject uio in UIObjects)
+            {
+                if (uio.Contains(Mouse.Position))
+                {
+                    EventManager.Fire(this, uio, Mouse.Left ? "MouseDown" : "MouseMove");
+                }
+            }
+            // Collision Updates
+            EventManager.Fire(this, "Update");
         }
     }
 }

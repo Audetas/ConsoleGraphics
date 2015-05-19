@@ -8,36 +8,46 @@ using ConsoleGraphics.Game;
 
 namespace ConsoleGraphics.Events
 {
+    class EventListener
+    {
+        public Type SenderType;
+        public string Listener;
+
+        public EventListener(Type type, string listener)
+        {
+            SenderType = type;
+            Listener = listener;
+        }
+    }
+
     public static class EventManager
     {
-        private static Thread _worker;
-        private static Dictionary<Action<Event>, Type> _listeners;
-        private static Queue<ScheduledEvent> _eventQueue;
-        private static List<ScheduledEvent> _events;
+        private static Dictionary<Action<object, Event>, EventListener> _listeners;
 
         static EventManager()
         {
-            _listeners = new Dictionary<Action<Event>, Type>();
-            _eventQueue = new Queue<ScheduledEvent>();
-            _events = new List<ScheduledEvent>();
-
-            _worker = new Thread(DoWork);
-            _worker.IsBackground = true;
-            _worker.Start();
+            _listeners = new Dictionary<Action<object, Event>, EventListener>();
         }
 
-        public static void Hook(Action<Event> callback, Type eventType)
+        public static void Hook(object sender, string listener, Action<object, Event> callback)
         {
+            Type senderType = sender.GetType().BaseType != typeof(object)
+                ? sender.GetType().BaseType
+                : sender.GetType();
+
             lock (_listeners)
-                _listeners.Add(callback, eventType);
+            {
+                _listeners.Add(
+                    callback,
+                    new EventListener(senderType, listener));
+            }
         }
 
-        public static void Unhook(Action<Event> callback, Type eventType = null)
+        public static void Unhook(Action<object, Event> callback)
         {
             lock (_listeners)
             {
-                if (eventType == null || _listeners[callback] == eventType)
-                    _listeners.Remove(callback);
+                _listeners.Remove(callback);
             }
         }
 
@@ -45,58 +55,28 @@ namespace ConsoleGraphics.Events
         {
             lock (_listeners)
             {
-                foreach (var pair in _listeners)
-                    if (pair.Key.Target == parent)
-                    {
-                        _listeners.Remove(pair.Key);
-                        break;
-                    }
-            }
-        }
-
-        public static void Schedule(ScheduledEvent s)
-        {
-            lock (_eventQueue)
-                _eventQueue.Enqueue(s);
-        }
-
-        public static void Fire(Event e)
-        {
-            Type eventType = e.GetType();
-            foreach (var pair in _listeners.Where(p => p.Value == eventType))
-                pair.Key(e);
-        }
-
-        private static void DoWork()
-        {
-            while (true)
-            {
-                // TODO: Accurate Sleep
-                Thread.Sleep(1);
-
-                lock (_eventQueue)
+                foreach (var key in _listeners.Keys)
                 {
-                    _events.AddRange(_eventQueue.ToArray());
-                    _eventQueue.Clear();
-                }
-
-                for (int i = _events.Count; i > 0; i--)
-                {
-                    ScheduledEvent e = _events[i];
-                    if (Environment.TickCount - e.Start >= e.Delay)
+                    if (key.Target == parent)
                     {
-                        if (e.PoolCallback)
-                            Task.Run(() => e.Callback(Environment.TickCount));
-                        else
-                            e.Callback(Environment.TickCount); // This is running on the eventmanager thread... look into
-
-                        if (e.Recurring)
-                            e.Start = Environment.TickCount;
-                        else
-                            _events.RemoveAt(i);
+                        _listeners.Remove(key);
                     }
                 }
             }
+        }
+
+        public static void Fire(object sender, object target, string listener, Event e = null)
+        {
+            Type senderType = sender.GetType();
+            foreach (var pair in _listeners.Where(p => (p.Value.SenderType == senderType && p.Value.Listener == listener && p.Key.Target == target)))
+                pair.Key(sender, e == null ? new Event() : e);
+        }
+
+        public static void Fire(object sender, string listener, Event e = null)
+        {
+            Type senderType = sender.GetType();
+            foreach (var pair in _listeners.Where(p => (p.Value.SenderType == senderType && p.Value.Listener == listener)))
+                pair.Key(sender, e == null ? new Event() : e);
         }
     }
 }

@@ -1,0 +1,61 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ConsoleGraphics.Util
+{
+    public enum ForeGround : ushort
+    {
+        Black = 0,
+        DarkBlue =    ANSI.FOREGROUND_BLUE,
+        DarkGreen =   ANSI.FOREGROUND_GREEN,
+        DarkCyan =    ANSI.FOREGROUND_GREEN | ANSI.FOREGROUND_BLUE,
+        DarkRed =     ANSI.FOREGROUND_RED,
+        DarkMagenta = ANSI.FOREGROUND_RED | ANSI.FOREGROUND_BLUE,
+        DarkYellow =  ANSI.FOREGROUND_RED | ANSI.FOREGROUND_GREEN,
+        DarkGray =    ANSI.FOREGROUND_RED | ANSI.FOREGROUND_GREEN | ANSI.FOREGROUND_BLUE,
+        Gray =        ANSI.FOREGROUND_INTENSITY,
+        Blue =        ANSI.FOREGROUND_INTENSITY | ANSI.FOREGROUND_BLUE,
+        Green =       ANSI.FOREGROUND_INTENSITY | ANSI.FOREGROUND_GREEN,
+        CYAN =        ANSI.FOREGROUND_INTENSITY | ANSI.FOREGROUND_GREEN | ANSI.FOREGROUND_BLUE,
+        RED =         ANSI.FOREGROUND_INTENSITY | ANSI.FOREGROUND_RED,
+        MAGENTA =     ANSI.FOREGROUND_INTENSITY | ANSI.FOREGROUND_RED | ANSI.FOREGROUND_BLUE,
+        YELLOW =      ANSI.FOREGROUND_INTENSITY | ANSI.FOREGROUND_RED | ANSI.FOREGROUND_GREEN,
+        WHITE =       ANSI.FOREGROUND_INTENSITY | ANSI.FOREGROUND_RED | ANSI.FOREGROUND_GREEN | ANSI.FOREGROUND_BLUE,
+    }
+
+    public enum BackGround : ushort
+    {
+        Black = 0,
+        DarkBlue =    ANSI.BACKGROUND_BLUE,
+        DarkGreen =   ANSI.BACKGROUND_GREEN,
+        DarkCyan =    ANSI.BACKGROUND_GREEN | ANSI.BACKGROUND_BLUE,
+        DarkRed =     ANSI.BACKGROUND_RED,
+        DarkMagenta = ANSI.BACKGROUND_RED | ANSI.BACKGROUND_BLUE,
+        DarkYellow =  ANSI.BACKGROUND_RED | ANSI.BACKGROUND_GREEN,
+        DarkGray =    ANSI.BACKGROUND_RED | ANSI.BACKGROUND_GREEN | ANSI.BACKGROUND_BLUE,
+        Gray =        ANSI.BACKGROUND_INTENSITY,
+        Blue =        ANSI.BACKGROUND_INTENSITY | ANSI.BACKGROUND_BLUE,
+        Green =       ANSI.BACKGROUND_INTENSITY | ANSI.BACKGROUND_GREEN,
+        CYAN =        ANSI.BACKGROUND_INTENSITY | ANSI.BACKGROUND_GREEN | ANSI.BACKGROUND_BLUE,
+        RED =         ANSI.BACKGROUND_INTENSITY | ANSI.BACKGROUND_RED,
+        MAGENTA =     ANSI.BACKGROUND_INTENSITY | ANSI.BACKGROUND_RED | ANSI.BACKGROUND_BLUE,
+        YELLOW =      ANSI.BACKGROUND_INTENSITY | ANSI.BACKGROUND_RED | ANSI.BACKGROUND_GREEN,
+        WHITE =       ANSI.BACKGROUND_INTENSITY | ANSI.BACKGROUND_RED | ANSI.BACKGROUND_GREEN | ANSI.BACKGROUND_BLUE,
+    }
+
+    static class ANSI
+    {
+        public const ushort FOREGROUND_BLUE = 0x0001;
+        public const ushort FOREGROUND_GREEN = 0x0002;
+        public const ushort FOREGROUND_RED = 0x0004;
+        public const ushort FOREGROUND_INTENSITY = 0x0008;
+
+        public const ushort BACKGROUND_BLUE = 0x0010;
+        public const ushort BACKGROUND_GREEN = 0x0020;
+        public const ushort BACKGROUND_RED = 0x0040;
+        public const ushort BACKGROUND_INTENSITY = 0x0080;
+    }
+}

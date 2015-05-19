@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ConsoleGraphics.Events
 {
-    class UserDrawEvent : Event
+    public class UIDrawEvent : Event
     {
     }
 }

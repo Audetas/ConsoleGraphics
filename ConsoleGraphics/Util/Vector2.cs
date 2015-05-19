@@ -17,6 +17,11 @@ namespace ConsoleGraphics.Util
             this.X = x;
             this.Y = y;
         }
+
+        public static Vector2 Empty
+        {
+            get { return new Vector2(0, 0); }
+        }
         
         public static Vector2 From(Point p)
         {

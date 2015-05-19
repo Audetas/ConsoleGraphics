@@ -23,6 +23,48 @@ namespace ConsoleGraphics.Graphics
         private static SafeFileHandle _h;
         private static CharInfo[] _buf;
         private static SmallRect _rect;
+        private static char[] _table;
+
+        static Renderer()
+        {
+            _table = new char[10000];
+            _table[(int)'☺'] = (char)1;
+            _table[(int)'☻'] = (char)2;//☻ 2
+            _table[(int)'♥'] = (char)3;//♥ 3
+            _table[(int)'♬'] = (char)14;//♬ 14
+            _table[(int)'►'] = (char)16;//► 16
+            _table[(int)'◄'] = (char)17;//◄ 17
+            _table[(int)'↑'] = (char)24;//↑ 24
+            _table[(int)'↓'] = (char)25;//↓ 25
+            _table[(int)'→'] = (char)26;//→ 26
+            _table[(int)'←'] = (char)27;//← 27
+            _table[(int)'▲'] = (char)30;//▲ 30
+            _table[(int)'▼'] = (char)31;//▼ 31
+            _table[(int)'«'] = (char)174;//« 174
+            _table[(int)'»'] = (char)175;//» 175
+            _table[(int)'░'] = (char)176;//░ 176
+            _table[(int)'▒'] = (char)177;//▒ 177
+            _table[(int)'▓'] = (char)178;//▓ 178
+            _table[(int)'│'] = (char)179;//│ 179
+            _table[(int)'║'] = (char)186;//║ 186
+            _table[(int)'╗'] = (char)187;//╗ 187
+            _table[(int)'╝'] = (char)188;//╝ 188
+            _table[(int)'┐'] = (char)191;//┐ 191
+            _table[(int)'└'] = (char)192;//└ 192
+            _table[(int)'─'] = (char)196;//─ 196
+            _table[(int)'╚'] = (char)200;//╚ 200
+            _table[(int)'╔'] = (char)201;//╔ 201
+            _table[(int)'═'] = (char)205;//═ 205
+            _table[(int)'┘'] = (char)217;//┘ 217
+            _table[(int)'┌'] = (char)218;//┌ 218
+            _table[(int)'█'] = (char)219;//█ 219
+            _table[(int)'▄'] = (char)220;//▄ 220
+            _table[(int)'▌'] = (char)221;//▌ 221
+            _table[(int)'▐'] = (char)222;//▐ 222
+            _table[(int)'▀'] = (char)223;//▀ 223
+            _table[(int)'∞'] = (char)236;//∞ 236
+            _table[(int)'√'] = (char)251;//√ 251
+        }
 
         public static void Init()
         {
@@ -30,6 +72,8 @@ namespace ConsoleGraphics.Graphics
             Console.OutputEncoding = Encoding.Unicode;
             Console.SetBufferSize(Console.WindowWidth, Console.WindowHeight);
             Width = Console.WindowWidth; Height = Console.WindowHeight;
+
+            // Create the buffer
             _h = ConIONative.CreateFile("CONOUT$", 0x40000000, 2, IntPtr.Zero, FileMode.Open, 0, IntPtr.Zero);
             _buf = new CharInfo[Console.WindowWidth * Console.WindowHeight];
             _rect = new SmallRect();
@@ -41,9 +85,10 @@ namespace ConsoleGraphics.Graphics
         {
             BeginWatch.Restart();
 
+            // Fill buffer
             for (int i = 0; i < _buf.Length; i++)
             {
-                _buf[i].Attributes = 20;
+                _buf[i].Attributes = 0;
                 _buf[i].Char.UnicodeChar = (char)' ';
             }
 
@@ -56,19 +101,13 @@ namespace ConsoleGraphics.Graphics
             SceneWatch.Stop();
             EndWatch.Restart();
 
-            ConIONative.WriteConsoleOutput(_h, _buf, new Coord((short)Console.WindowWidth, (short)Console.WindowHeight), new Coord((short)0, (short)0), ref _rect);
+            // Write buffer to stdout
+            ConIONative.WriteConsoleOutput(_h, _buf, 
+                new Coord((short)Console.WindowWidth, (short)Console.WindowHeight), 
+                new Coord((short)0, (short)0), ref _rect);
 
             EndWatch.Stop();
         }
-
-        #region Buffer Writes
-        private static int ApplyRotation(GameObject obj, int x, int y)
-        {
-            int newX = (int)(x * Math.Cos(obj.Rotation) - y * Math.Sin(obj.Rotation)) + (int)obj.Position.X;
-            int newY = (int)(y * Math.Cos(obj.Rotation) + x * Math.Sin(obj.Rotation)) + (int)obj.Position.Y;
-            return newX + Console.WindowWidth * newY;
-        }
-        #endregion
 
         #region Surface Writes
         private static void Draw(GameObject obj, double cos, double sin, float centerX, float centerY, int x, int y, char c, short color)
@@ -78,7 +117,7 @@ namespace ConsoleGraphics.Graphics
                 int newX = (int)(obj.Position.X + x);
                 int newY = (int)(obj.Position.Y + y);
                 if (newX > Width - 1 || newX < 0 || newY > Height - 1 || newY < 0) return;
-                _buf[newX + Width * newY] = new CharInfo(c, color);
+                _buf[newX + Width * newY] = new CharInfo(c > 10000 ? c : _table[c], color);
             }
             else
             {
@@ -90,7 +129,7 @@ namespace ConsoleGraphics.Graphics
                     newX > Width - 1 || newY > Height - 1 ||
                     newX > obj.Position.X + obj.Size.X || newY > obj.Position.Y + obj.Size.Y) return;
                 //if (newX > Width - 1 || newX < 0 || newY > Height - 1 || newY < 0) return;
-                _buf[newX + Width * newY] = new CharInfo(c, color);
+                _buf[newX + Width * newY] = new CharInfo(c > 10000 ? c : _table[c], color);
             }
         }
 
