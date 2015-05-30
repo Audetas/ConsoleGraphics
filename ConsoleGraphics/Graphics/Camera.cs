@@ -13,11 +13,10 @@ namespace ConsoleGraphics.Graphics
     {
         public Camera(Space space) : base(space)
         {
-            EventManager.Hook(Level, "Draw", Draw);
             Size = new Vector2(Console.WindowWidth, Console.WindowHeight);
         }
 
-        private void Draw(object sender, Event e)
+        public override void Draw()
         {
             // This may seem like a cheap or dirty way to do this,
             // But it's actually the cheapest way of calculating the viewport.
@@ -26,15 +25,10 @@ namespace ConsoleGraphics.Graphics
             // object updating is gauranteed to be done before the scene is drawn.
             foreach (GameObject go in Space.Objects)
             {
+                if (go == this) continue;
                 go.Position -= this.Position;
                 go.Rotation += this.Rotation;
-            }
-
-            Space.Objects = Space.Objects.OrderBy(go => go.Depth).ToList();
-            EventManager.Fire(this.Space, "Draw", new Event());
-
-            foreach (GameObject go in Space.Objects)
-            {
+                go.Draw();
                 go.Position += this.Position;
                 go.Rotation -= this.Rotation;
             }

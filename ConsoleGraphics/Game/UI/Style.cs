@@ -12,18 +12,19 @@ namespace ConsoleGraphics.Game.UI
         public string Name = "Name";
         public string Text = "Text";
 
+        public bool Hidden = false;
+        public bool Enabled = true;
         public bool Filled = true;
         public bool Border = true;
+        public bool Draggable = true;
 
-        public ForeGround ForeColor = ForeGround.DarkGray;
-        public BackGround BackColor = BackGround.Black;
-        public ForeGround MouseOverForeColor = ForeGround.Gray;
-        public BackGround MouseOverBackColor = BackGround.Black;
-        public ForeGround MouseDownForeColor = ForeGround.DarkGray;
-        public BackGround MouseDownBackColor = BackGround.Black;
+        public short ForeColor = (short)ForeGround.WHITE | (short)BackGround.Black;
+        public short BackColor = (short)ForeGround.Black | (short)BackGround.WHITE;
+        public short MouseOverForeColor = (short)ForeGround.Black | (short)BackGround.WHITE;
+        public short MouseOverBackColor = (short)ForeGround.WHITE | (short)BackGround.Black;
 
-        public char ForeChar = '█';
-        public char BackChar = '█';
+        public char ForeChar = '│';
+        public char BackChar = ' ';
         public char MouseOverForeChar = '▒';
         public char MouseOverBackChar = '▒';
         public char MouseDownForeChar = '█';

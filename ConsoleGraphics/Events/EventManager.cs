@@ -53,6 +53,7 @@ namespace ConsoleGraphics.Events
 
         public static void Unhook(GameObject parent)
         {
+            
             lock (_listeners)
             {
                 foreach (var key in _listeners.Keys)

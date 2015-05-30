@@ -8,6 +8,7 @@ using ConsoleGraphics.Game;
 using ConsoleGraphics.Graphics;
 using ConsoleGraphics.Util;
 using ConsoleGraphics.Game.UI;
+using ConsoleGraphics.Game.Levels;
 
 namespace ConsoleGraphics
 {
@@ -15,32 +16,18 @@ namespace ConsoleGraphics
     {
         static void Main(string[] args)
         {
-            Console.Title = "Console Graphics";
-            Console.SetWindowSize((int)(Console.LargestWindowHeight / 3f * 2f * 1.3333f), (int)(Console.LargestWindowHeight / 3f * 2f * .75f));
+            Console.Title = "AGAR.STD.IO";
+            Console.SetWindowSize((int)(Console.LargestWindowHeight * 1.3333f), (int)(Console.LargestWindowHeight * .75f));
             Renderer.Init();
 
-            Level level = new Level();
-            Window window = new Window(level.Space, Style.Default);
-            int width = 10;
-            int height = 10;
-            Random r = new Random();
-            for (int x = 0; x < 150; x += width)
-            {
-                for (int y = 0; y < 150; y += height)
-                {
-                    GameObject tile = level.Space.Create(new Vector2(x, y), new Vector2(width, height));
-                    int color = (short)r.Next(30, 200);
-                    EventManager.Hook(level.Space, "Draw", (s, e) =>
-                    {
-                        Renderer.FillRect(tile, 1, 1, width - 2, height - 2, ' ', (short)color);  
-                    });
-                }
-            }
+            AgarioLevel level = new AgarioLevel();
 
             while (true)
             {
                 level.Update();
+                Renderer.BeginScene();
                 level.Draw();
+                Renderer.EndScene();
             }
         }
     }

@@ -12,7 +12,6 @@ namespace ConsoleGraphics.Game
     {
         public Style Style;
         public List<UIObject> Children;
-        public UIObject Parent = null;
 
         public UIObject(Space space, Style style) : base(space)
         {
@@ -28,12 +27,29 @@ namespace ConsoleGraphics.Game
             Children = new List<UIObject>();
         }
 
-        public Vector2 GetRawPosition()
+        public void CenterVertical()
         {
-            if (Parent != null)
-                return Parent.GetRawPosition() + this.Position;
-            else
-                return this.Position;
+            if (Parent == null) Y = Space.Camera.Center.Y - Height / 2f;
+            else Y = Parent.Height / 2f - Height / 2f;
+        }
+
+        public void CenterHorizontal()
+        {
+            if (Parent == null) X = Space.Camera.Center.X - Width / 2f;
+            else X = Parent.Width / 2f - Width / 2f;
+        }
+
+        public override void Update()
+        {
+            base.Update();
+            if (!Style.Hidden && Style.Enabled)
+                foreach (UIObject uo in Children) uo.Update();
+        }
+
+        public override void Draw()
+        {
+            if (!Style.Hidden)
+                foreach (UIObject uo in Children) uo.Draw();
         }
     }
 }

@@ -11,35 +11,36 @@ namespace ConsoleGraphics.Game.UI
 {
     class Window : UIObject
     {
-        private short _foreColor = 20;
-        public Window(Space space, Style style) : base(space, style) 
+        public Window(Space space, Style style) 
+            : base(space, style) 
         {
-            EventManager.Hook(Space, "Update", Update);
-            EventManager.Hook(Space, "Draw", Draw);
-            Size = new Vector2(20, 30);
-            EventManager.Hook(this.Space, "MouseOver", MouseOver);
-            Depth = 1;
+            space.UIObjects.Add(this);
         }
 
-        public Window(UIObject parent, Style style) : base(parent, style) 
+        public Window(UIObject parent, Style style) 
+            : base(parent, style) 
         {
-            EventManager.Hook(Space, "Draw", Draw);
+            parent.Children.Add(this);
         }
 
-        private void Update(object sender, Event e)
+        public bool GripContains(Vector2 point)
         {
-            Center = Mouse.Position;
-            Space.Camera.Center = Center;
+            return point.X >= Position.X && point.X <= Position.X + Size.X &&
+                point.Y >= Position.Y && point.Y <= Position.Y + 3;
+        }
+        public override void Update()
+        {
+            base.Update();
+            if (Style.Draggable && MouseDown && GripContains(Mouse.Position))
+                Position = Mouse.Position - new Vector2(2, 2);
         }
 
-        private void MouseOver(object sender, Event e)
+        public override void Draw()
         {
-            _foreColor = 60;
-        }
-
-        private void Draw(object sender, Event e)
-        {
-            Renderer.DrawRect(this, 0, 0, (int)Size.X, (int)Size.Y, 'x', _foreColor);
+            if (Style.Hidden) return;
+            if (Style.Filled) Renderer.FillRect(this, 0, 0, Width, Height, Style.BackChar, Style.BackColor);
+            if (Style.Border) Renderer.DrawRect(this, 0, 0, Width, Height, Style.ForeChar, Style.ForeColor);
+            base.Draw();
         }
     }
 }

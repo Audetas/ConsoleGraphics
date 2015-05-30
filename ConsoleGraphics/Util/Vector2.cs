@@ -62,5 +62,10 @@ namespace ConsoleGraphics.Util
         {
             return (float)System.Math.Sqrt(X * X + Y * Y);
         }
+
+        public override string ToString()
+        {
+            return "{ " + X + ", " + Y + " }";
+        }
     }
 }

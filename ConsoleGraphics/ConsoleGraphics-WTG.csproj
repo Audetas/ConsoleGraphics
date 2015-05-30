@@ -51,14 +51,12 @@
     <Compile Include="Events\EventManager.cs" />
     <Compile Include="Events\UIDrawEvent.cs" />
     <Compile Include="Events\UpdateEvent.cs" />
-    <Compile Include="Game\GameObjects\AgarioMap.cs" />
     <Compile Include="Game\Level.cs" />
     <Compile Include="Game\GameObject.cs" />
-    <Compile Include="Game\Levels\AgarioLevel.Net.cs" />
-    <Compile Include="Game\Levels\AgarioLevel.cs" />
+    <Compile Include="Game\Levels\AgarioMenuLevel.cs" />
+    <Compile Include="Game\Levels\AgarioPlayingLevel.cs" />
     <Compile Include="Game\Space.cs" />
     <Compile Include="Game\UIObject.cs" />
-    <Compile Include="Game\UI\Button.cs" />
     <Compile Include="Game\UI\DropDown.cs" />
     <Compile Include="Game\UI\Label.cs" />
     <Compile Include="Game\UI\ListBox.cs" />
@@ -83,6 +81,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Game\GameObjects\" />
     <Folder Include="Game\UI\UIObjects\" />
     <Folder Include="Resources\" />
   </ItemGroup>

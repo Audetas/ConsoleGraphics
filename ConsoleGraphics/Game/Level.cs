@@ -1,5 +1,7 @@
 ﻿using ConsoleGraphics.Events;
 using ConsoleGraphics.Graphics;
+using ConsoleGraphics.Net;
+using ConsoleGraphics.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,16 +19,19 @@ namespace ConsoleGraphics.Game
             Space = new Space(this);
         }
 
-        public void Update()
+        public virtual void Update()
         {
-            EventManager.Fire(this, "Update", new Event());
+            foreach (GameObject go in Space.Objects) go.Update();
+
+            foreach (UIObject uo in Space.UIObjects) 
+                if (!uo.Style.Hidden && uo.Style.Enabled) uo.Update();
         }
 
-        public void Draw()
+        public virtual void Draw()
         {
-            Renderer.BeginScene();
-            EventManager.Fire(this, "Draw", new Event());
-            Renderer.EndScene();
+            Space.Camera.Draw();
+            foreach (UIObject uo in Space.UIObjects) 
+                if (!uo.Style.Hidden) uo.Draw();
         }
     }
 }
