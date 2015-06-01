@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ConsoleGraphics.Util;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -20,6 +21,11 @@ namespace ConsoleGraphics.Net
         public bool Virus = false;
         public string Name;
 
+        // TEMP
+        public Vector2 Target;
+
+        public NodeData() { }
+
         public NodeData(BinaryReader r)
         {
             Id = r.ReadInt32();
@@ -32,15 +38,11 @@ namespace ConsoleGraphics.Net
             Green = r.ReadByte();
             Blue = r.ReadByte();
             Flags = r.ReadByte();
-            /*
-            if      ((1 & Flags) != 0) Virus = true;
-            else if ((2 & Flags) != 0) r.ReadBytes(4);
-            else if ((8 & Flags) != 0) r.ReadBytes(8);
-            else if ((128 & Flags) != 0) r.ReadBytes(16);*/
-            Virus = ((Flags & 0) == 1);
-            //if ((Flags & 2) == 0) r.ReadBytes(4);
-            //if ((Flags & 4) == 0) r.ReadBytes(8);
-            //if ((Flags & 8) == 0) r.ReadBytes(16);
+            Virus = ((Flags & 1) != 0);
+
+            if (Convert.ToBoolean(Flags & 2)) r.ReadBytes(2);
+            if (Convert.ToBoolean(Flags & 2)) r.ReadBytes(4);
+            if (Convert.ToBoolean(Flags & 2)) r.ReadBytes(8);
 
             while (true)
             {

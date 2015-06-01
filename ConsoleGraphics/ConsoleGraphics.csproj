@@ -59,6 +59,7 @@
     <Compile Include="Game\Space.cs" />
     <Compile Include="Game\UIObject.cs" />
     <Compile Include="Game\UI\Button.cs" />
+    <Compile Include="Game\UI\Checkbox.cs" />
     <Compile Include="Game\UI\DropDown.cs" />
     <Compile Include="Game\UI\Label.cs" />
     <Compile Include="Game\UI\ListBox.cs" />
@@ -66,6 +67,7 @@
     <Compile Include="Game\UI\Window.cs" />
     <Compile Include="Graphics\Camera.cs" />
     <Compile Include="Graphics\ConIONative.cs" />
+    <Compile Include="Graphics\Renderer.Constants.cs" />
     <Compile Include="Graphics\Renderer.cs" />
     <Compile Include="Net\ExtensionMethods.cs" />
     <Compile Include="Net\NodeData.cs" />

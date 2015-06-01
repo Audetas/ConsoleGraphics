@@ -20,6 +20,8 @@ namespace ConsoleGraphics.Game.Levels
         private bool _connected = false;
 
         private Window _menu;
+        private Checkbox _gridCheck;
+        private Checkbox _massCheck;
         private ListBox _serverList;
         private Button _playButton;
         private Button _changesButton;
@@ -63,28 +65,59 @@ namespace ConsoleGraphics.Game.Levels
             _changesButton.Size = new Vector2(_menu.Width, 4);
             _changesButton.Y = _siteButton.LocalY + _siteButton.Height + 1;
 
-            _agarioLogo = new Label(_menu, "AGAR.STD.IO ");
-            _agarioLogo.CenterHorizontal();
+            _gridCheck = new Checkbox(_menu, Style.Default);
+            _gridCheck.SetText("Show Grid");
+            _gridCheck.X = 2;
+            _gridCheck.Y = _changesButton.LocalY + _changesButton.Height + 2;
+            _gridCheck.Style.ForeChar = '║';
+            _gridCheck.Style.ForeColor = (short)ForeGround.WHITE | (short)BackGround.Gray;
+            _gridCheck.Style.BackColor = (short)ForeGround.Black | (short)BackGround.Gray;
+            _gridCheck.Checked = true;
+
+            _massCheck = new Checkbox(_menu, Style.Default);
+            _massCheck.SetText("Show mass");
+            _massCheck.Style.ForeChar = '║';
+            _massCheck.Style.ForeColor = (short)ForeGround.WHITE | (short)BackGround.Gray;
+            _massCheck.Style.BackColor = (short)ForeGround.Black | (short)BackGround.Gray;
+            _massCheck.Checked = true;
+            _massCheck.X = _menu.Width - _gridCheck.Width - 1;
+            _massCheck.Y = _changesButton.LocalY + _changesButton.Height + 2;
+
+            _agarioLogo = new Label(_menu, Style.Default);
+            _agarioLogo.Rendered = true;
+            _agarioLogo.SetText("AGAR.STD.IO");
             _agarioLogo.CenterVertical();
-            _agarioLogo.X += Space.Camera.Width / 2f;
+            _agarioLogo.X = Space.Camera.Width / 2f - _agarioLogo.Width / 2f + _menu.Width / 2f;
 
             _map = new AgarioMap(Space);
             _map.Size = new Vector2(200, 200);
+            _map.Center = Space.Camera.Center;
 
             _leaderBoard = new ListBox(Space, Style.Default);
             _leaderBoard.Size = new Vector2(20, 13);
             _leaderBoard.CenterVertical();
             _leaderBoard.X = Renderer.Width - _leaderBoard.Width;
             _leaderBoard.Style.Hidden = true;
+
+            Random r = new Random();
+            for (int i = 0; i < 50; i++)
+            {
+                _map.Nodes.Add(new NodeData()
+                {
+                    X = r.Next(0, _map.Width),
+                    Y = r.Next(0, _map.Height),
+                    Size = r.Next(1, 20),
+                    Red = (byte)r.Next(0, 255),
+                    Green = (byte)r.Next(0, 255),
+                    Blue = (byte)r.Next(0, 255),
+                    Target = new Vector2(r.Next(0, _map.Width), r.Next(0, _map.Height))
+                });
+            }
         }
 
         public override void Update()
         {
             _playButton.Style.Enabled = _serverList.SelectedIndex != -1;
-            // Logo rotation
-            _agarioLogo.Rotation += _direction ? 0.003f : -0.003f;
-            if      ( _direction && _agarioLogo.Rotation > 0.3f)  _direction = false;
-            else if (!_direction && _agarioLogo.Rotation < -0.3f) _direction = true;
             // Play button
             if (_playButton.MouseDown)
             {
@@ -92,7 +125,7 @@ namespace ConsoleGraphics.Game.Levels
                 _leaderBoard.Style.Hidden = false;
                 BeginConnect();
             }
-
+            _map.DrawGrid = _gridCheck.Checked;
             if (_siteButton.MouseDown) Process.Start("http://agar.io/");
             if (_changesButton.MouseDown) Process.Start("http://agar.io/changelog.txt");
 
@@ -102,11 +135,8 @@ namespace ConsoleGraphics.Game.Levels
         public override void Draw()
         {
             base.Draw();
-            //Renderer.FillCircle(_menu, 20, 20, 10, '░');
-            //Renderer.DrawCircle(_menu, 20, 20, 10, ' ');
             Renderer.Draw("FPS: " + Renderer.FPS, Renderer.Width - 8, 0, _agarioLogo.Style.BackColor);
             Renderer.Draw(((ServerPacket)_latestMessage).ToString(), Renderer.Width - 8, 1, _agarioLogo.Style.BackColor);
-            //Renderer.Draw(_map.Position.ToString() + " : " + _map.Size.ToString(), 0, 0, _agarioLogo.Style.BackColor);
         }
     }
 }

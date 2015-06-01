@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ConsoleGraphics.Util
 {
-    public class Vector2
+    public struct Vector2
     {
         public float X;
         public float Y;
@@ -16,6 +16,17 @@ namespace ConsoleGraphics.Util
         {
             this.X = x;
             this.Y = y;
+        }
+
+        public Vector2 Normalize()
+        {
+            float val = 1f / (float)Math.Sqrt((X * X) + (Y * Y));
+            return new Vector2(X * val, Y * val);
+        }
+
+        public float Distance(Vector2 target)
+        {
+            return Distance(this, target);
         }
 
         public static Vector2 Empty

@@ -11,6 +11,8 @@ namespace ConsoleGraphics.Game.UI
 {
     class Label : UIObject
     {
+        public bool Rendered = false;
+
         public Label(Space space, Style style)
             : base(space, style)
         {
@@ -23,17 +25,22 @@ namespace ConsoleGraphics.Game.UI
             parent.Children.Add(this);
         }
 
-        public Label(UIObject parent, string text)
-            : base(parent, Style.Default)
+        public void SetText(string text)
         {
-            parent.Children.Add(this);
             Style.Text = text;
-            Size = new Vector2(text.Length, 1);
+
+            if (Rendered)
+                Size = Renderer.Measure(text);
+            else
+                Size = new Vector2(text.Length, 1);
         }
 
         public override void Draw()
         {
-            Renderer.Draw(this, Style.Text, 0, 0, Style.BackColor);
+            if (Rendered)
+                Renderer.Render(this, Style.Text, 0, 0, Style.BackColor);
+            else
+                Renderer.Draw(this, Style.Text, 0, 0, Style.BackColor);
         }
     }
 }

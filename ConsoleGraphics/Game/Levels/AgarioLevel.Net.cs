@@ -53,6 +53,7 @@ namespace ConsoleGraphics.Game.Levels
                         _map.Y = (float)b.ReadDouble();
                         _map.Size.X = (float)b.ReadDouble() / 30.0f;
                         _map.Size.Y = (float)b.ReadDouble() / 30.0f;
+                        _map.Center = Space.Camera.Position;
                         break;
                     }
                     case ServerPacket.TEAMBOARD: break;
@@ -87,13 +88,16 @@ namespace ConsoleGraphics.Game.Levels
                     case ServerPacket.UPDATE:
                     {
                         ushort drops = b.ReadUInt16();
-                        for (int i = 0; i < drops; i++)
+                        for (int i = 0; i < drops; ++i)
+                            b.ReadUInt64();
+                        /*
+                        for (int i = 0; i <= drops; i++)
                         {
                             NodeData dropped = new NodeData(b);
                             for (int n = _map.Nodes.Count - 1; n > 0; n--)
                                 if (_map.Nodes[n].Id == dropped.Id)
                                     _map.Nodes.RemoveAt(n);
-                        }
+                        }*/
 
                         while (true)
                         {
