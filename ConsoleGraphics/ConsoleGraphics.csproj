@@ -44,6 +44,9 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="websocket-sharp">
+      <HintPath>..\websocket-sharp\bin\Debug_Ubuntu\websocket-sharp.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Events\DrawEvent.cs" />
@@ -52,6 +55,7 @@
     <Compile Include="Events\UIDrawEvent.cs" />
     <Compile Include="Events\UpdateEvent.cs" />
     <Compile Include="Game\GameObjects\AgarioMap.cs" />
+    <Compile Include="Game\GameObjects\Cell.cs" />
     <Compile Include="Game\Level.cs" />
     <Compile Include="Game\GameObject.cs" />
     <Compile Include="Game\Levels\AgarioLevel.Net.cs" />
@@ -71,6 +75,8 @@
     <Compile Include="Graphics\Renderer.cs" />
     <Compile Include="Net\ExtensionMethods.cs" />
     <Compile Include="Net\NodeData.cs" />
+    <Compile Include="Net\PacketBuffer.cs" />
+    <Compile Include="Net\PacketReader.cs" />
     <Compile Include="Net\Server.cs" />
     <Compile Include="Net\ServerData.cs" />
     <Compile Include="Net\WebSocketWrapper.cs" />

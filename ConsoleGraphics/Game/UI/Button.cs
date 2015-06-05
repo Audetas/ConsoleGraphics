@@ -10,6 +10,9 @@ namespace ConsoleGraphics.Game.UI
 {
     class Button : UIObject
     {
+        public bool Clicked = false;
+        private bool _lastState = false;
+
         public Button(Space space, Style style) 
             : base(space, style) 
         {
@@ -30,6 +33,8 @@ namespace ConsoleGraphics.Game.UI
         public override void Update()
         {
             base.Update();
+            Clicked = (_lastState && !MouseDown);
+            _lastState = MouseDown;
         }
 
         public override void Draw()

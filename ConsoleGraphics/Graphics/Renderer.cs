@@ -54,6 +54,8 @@ namespace ConsoleGraphics.Graphics
                 _buf[i].Attributes = 0xFF;
                 _buf[i].Char.UnicodeChar = (char)' ';
             }
+            // Invalidate renderer cache
+            __obj = null;
         }
 
         public static void EndScene()
@@ -91,7 +93,7 @@ namespace ConsoleGraphics.Graphics
             }
             else if (obj == __obj)
             {
-                //goto Compute;
+                goto Compute;
             }
 
         Cache:
@@ -102,8 +104,8 @@ namespace ConsoleGraphics.Graphics
             __cY = obj.Size.Y / 2.0 + obj.Y;
 
         Compute:
-            double dx = obj.X + x;
-            double dy = obj.Y + y;
+            double dx = obj.X + x - __cX;
+            double dy = obj.Y + y - __cY;
             newX = (int)(__cos * dx - __sin * dy + __cX);
             newY = (int)(__sin * dx + __cos * dy + __cY);
 
@@ -116,61 +118,32 @@ namespace ConsoleGraphics.Graphics
                 : (byte)character;
         }
 
-        private static void _render(int x, int y, char character, short color)
+        private static void _render(float x, float y, char character, short color)
         {
             if (x > Width - 1 || x < 0 || y > Height - 1 || y < 0) return;
-            int position = x + Width * y;
+            int position = (int)(x + Width * y);
             _buf[position].Attributes = color;
             _buf[position].Char.AsciiChar = character > 9000 && character < 10000
                 ? (byte)_table[character]
                 : (byte)character;
         }
 
-        private static void _renderOLD(GameObject obj, int x, int y, char c, short color)
-        {
-            Vector2 center = obj.Center;
-            double cos = Math.Cos(obj.Rotation);
-            double sin = Math.Sin(obj.Rotation);
-
-            if (obj.Rotation == 0f)
-            {
-                int newX = (int)(obj.X + x);
-                int newY = (int)(obj.Y + y);
-                if (newX > Width - 1 || newX < 0 || newY > Height - 1 || newY < 0) return;
-                _buf[newX + Width * newY].Char.AsciiChar = c < 9000 || c > 10000 ? (byte)c : _table[c];
-                _buf[newX + Width * newY].Attributes = color;
-            }
-            else
-            {
-                double dx = obj.X + x - center.X;
-                double dy = obj.Y + y - center.Y;
-                int newX = (int)(cos * dx - sin * dy + center.X);
-                int newY = (int)(sin * dx + cos * dy + center.Y);
-                if (newX < 0 || newY < 0 ||
-                    newX > Width - 1 || newY > Height - 1 ||
-                    newX > obj.X + obj.Width || newY > obj.Y + obj.Width) return;
-                //if (newX > Width - 1 || newX < 0 || newY > Height - 1 || newY < 0) return;
-                _buf[newX + Width * newY].Char.AsciiChar = c < 9000 || c > 10000 ? (byte)c : _table[c];
-                _buf[newX + Width * newY].Attributes = color;
-            }
-        }
-
         #endregion
 
         #region Surface Writes
-        public static void Draw(string text, int x, int y, short color = 1)
+        public static void Draw(string text, float x, float y, short color = 1)
         {
             for (int i = 0; i < text.Length; i++)
                 _render(x + i, y, text[i], color);
         }
 
-        public static void Draw(GameObject obj, string text, int x, int y, short color = 1)
+        public static void Draw(GameObject obj, string text, float x, float y, short color = 1)
         {
             for (int i = 0; i < text.Length; i++)
                 _render(obj, x + i, y, text[i], color);
         }
 
-        public static void Render(GameObject obj, string text, int x, int y, short color = 1)
+        public static void Render(GameObject obj, string text, float x, float y, short color = 1)
         {
             int fontWidth = _map[(int)text[0]][0].Length;
             int fontHeight = _map[(int)text[0]].Length;
@@ -181,7 +154,7 @@ namespace ConsoleGraphics.Graphics
                     {
                         char c = _map[(int)text[cIndex]][dy][dx];
                         if (c != _whiteSpace)
-                            _renderOLD(obj, x + (cIndex * fontWidth) + dx + cIndex, y + dy, c, color);
+                            _render(obj, x + (cIndex * fontWidth) + dx + cIndex, y + dy, c, color);
                     }
         }
 
@@ -230,7 +203,7 @@ namespace ConsoleGraphics.Graphics
             }
         }
 
-        public static void DrawRect(GameObject obj, int x, int y, int width, int height, char c = ' ', short color = 1)
+        public static void DrawRect(GameObject obj, float x, float y, int width, int height, char c = ' ', short color = 1)
         {
             char side = c;
             char top = c;
@@ -272,14 +245,14 @@ namespace ConsoleGraphics.Graphics
             }
         }
 
-        public static void FillRect(GameObject obj, int x, int y, int width, int height, char c = ' ', short color = 1)
+        public static void FillRect(GameObject obj, float x, float y, int width, int height, char c = ' ', short color = 1)
         {
             for (int rx = 0; rx <= width; rx++)
                 for (int ry = 0; ry <= height; ry++)
                     _render(obj, rx + x, ry + y, c, color);
         }
 
-        public static void DrawCircle(GameObject obj, int x, int y, float radius, char c = ' ', short color = 1)
+        public static void DrawCircle(GameObject obj, float x, float y, float radius, char c = ' ', short color = 1)
         {
             for (double i = 0.0; i < 360.0; i += 50.0 / radius)
             {
@@ -290,28 +263,12 @@ namespace ConsoleGraphics.Graphics
             }
         }
 
-        public static void FillCircle(GameObject obj, int x, int y, float radius, char c = ' ', short color = 1)
+        public static void FillCircle(GameObject obj, float x, float y, float radius, char c = ' ', short color = 1)
         {
             for (float dy = -radius; dy <= radius; dy++)
                 for (float dx = -radius; dx <= radius; dx++)
                     if (dx * dx + dy * dy <= radius * radius)
                         _render(obj, x + dx, y + dy, c, color);
-        }
-
-        public static void FillCircleOLD(GameObject obj, int x, int y, float radius, char c = ' ', short color = 1)
-        {
-            int r2 = (int)(radius * radius);
-            int area = r2 << 2;
-            int rr = (int)radius << 1;
-
-            for (int i = 0; i < area; i++)
-            {
-                int tx = (i % rr) - (int)radius;
-                int ty = (i / rr) - (int)radius;
-
-                if (tx * tx + ty * ty <= r2)
-                    _render(obj, x + tx, y + ty, c, color);
-            }
         }
         #endregion
     }

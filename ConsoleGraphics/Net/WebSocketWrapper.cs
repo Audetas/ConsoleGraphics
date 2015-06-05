@@ -11,7 +11,7 @@ namespace ConsoleGraphics.Net
     public class WebSocketWrapper
     {
         //A chunk size of 1? FIXME
-        private const int ReceiveChunkSize = 1;
+        private const int ReceiveChunkSize = 1024;
 
         private ClientWebSocket _ws;
         private readonly Uri _uri;

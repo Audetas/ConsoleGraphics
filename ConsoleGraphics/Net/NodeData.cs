@@ -10,19 +10,18 @@ namespace ConsoleGraphics.Net
 {
     class NodeData
     {
+        public static float SCALE = 0.01f;
+
         public int Id;
-        public double X;
-        public double Y;
-        public double Size;
+        public ushort X;
+        public ushort Y;
+        public ushort Size;
         public byte Red;
         public byte Green;
         public byte Blue;
         public byte Flags;
         public bool Virus = false;
         public string Name;
-
-        // TEMP
-        public Vector2 Target;
 
         public NodeData() { }
 
@@ -31,9 +30,9 @@ namespace ConsoleGraphics.Net
             Id = r.ReadInt32();
             if (Id == 0) return;
 
-            X = r.ReadDouble();
-            Y = r.ReadDouble();
-            Size = r.ReadDouble();
+            X = (ushort)(r.ReadUInt16() / SCALE);
+            Y = (ushort)(r.ReadUInt16() / SCALE);
+            Size = (ushort)(r.ReadUInt16() / SCALE);
             Red = r.ReadByte();
             Green = r.ReadByte();
             Blue = r.ReadByte();

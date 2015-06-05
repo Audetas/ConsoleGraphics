@@ -12,6 +12,8 @@ namespace ConsoleGraphics.Util
         public float X;
         public float Y;
 
+        private static Random _rand = new Random();
+
         public Vector2(float x, float y)
         {
             this.X = x;
@@ -33,10 +35,27 @@ namespace ConsoleGraphics.Util
         {
             get { return new Vector2(0, 0); }
         }
+
+        public static Vector2 Random(float minX, float maxX, float minY, float maxY)
+        {
+            return new Vector2(
+                (float)_rand.NextDouble() * (maxX - minX) + minX,
+                (float)_rand.NextDouble() * (maxY - minY) + minY);
+        }
         
         public static Vector2 From(Point p)
         {
             return new Vector2(p.X, p.Y);
+        }
+
+        public static bool operator ==(Vector2 v1, Vector2 v2)
+        {
+            return v1.X == v2.X && v1.Y == v2.Y;
+        }
+
+        public static bool operator !=(Vector2 v1, Vector2 v2)
+        {
+            return v1.X != v2.X && v1.Y != v2.Y;
         }
         
         public static Vector2 operator +(Vector2 v1, Vector2 v2)
@@ -66,12 +85,12 @@ namespace ConsoleGraphics.Util
 
         public static float Distance(Vector2 v1, Vector2 v2)
         {
-            return (float)System.Math.Sqrt(System.Math.Pow(v1.X - v2.X, 2) + System.Math.Pow(v1.Y - v2.Y, 2));
+            return (float)Math.Sqrt(Math.Pow(v1.X - v2.X, 2) + Math.Pow(v1.Y - v2.Y, 2));
         }
 
         public float Length()
         {
-            return (float)System.Math.Sqrt(X * X + Y * Y);
+            return (float)Math.Sqrt(X * X + Y * Y);
         }
 
         public override string ToString()

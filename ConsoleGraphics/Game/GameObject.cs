@@ -120,6 +120,13 @@ namespace ConsoleGraphics.Game
                    point.Y >= Y && point.Y <= Y + Height;
         }
 
+        public void Transform(Vector2 target, float speed)
+        {
+            Vector2 dir = (target - Position).Normalize();
+            X += dir.X * speed;
+            Y += dir.Y * speed;
+        }
+
         public virtual void Destroy()
         {
             EventManager.Unhook(this);

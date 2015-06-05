@@ -16,9 +16,6 @@ namespace ConsoleGraphics.Game.Levels
 {
     public partial class AgarioLevel : Level
     {
-        private WebSocketWrapper _socket;
-        private bool _connected = false;
-
         private Window _menu;
         private Checkbox _gridCheck;
         private Checkbox _massCheck;
@@ -27,7 +24,6 @@ namespace ConsoleGraphics.Game.Levels
         private Button _changesButton;
         private Button _siteButton;
         private Label _agarioLogo;
-        private bool _direction = true;
 
         private AgarioMap _map;
         private ListBox _leaderBoard;
@@ -90,7 +86,6 @@ namespace ConsoleGraphics.Game.Levels
             _agarioLogo.X = Space.Camera.Width / 2f - _agarioLogo.Width / 2f + _menu.Width / 2f;
 
             _map = new AgarioMap(Space);
-            _map.Size = new Vector2(200, 200);
             _map.Center = Space.Camera.Center;
 
             _leaderBoard = new ListBox(Space, Style.Default);
@@ -98,42 +93,31 @@ namespace ConsoleGraphics.Game.Levels
             _leaderBoard.CenterVertical();
             _leaderBoard.X = Renderer.Width - _leaderBoard.Width;
             _leaderBoard.Style.Hidden = true;
-
-            Random r = new Random();
-            for (int i = 0; i < 50; i++)
-            {
-                _map.Nodes.Add(new NodeData()
-                {
-                    X = r.Next(0, _map.Width),
-                    Y = r.Next(0, _map.Height),
-                    Size = r.Next(1, 20),
-                    Red = (byte)r.Next(0, 255),
-                    Green = (byte)r.Next(0, 255),
-                    Blue = (byte)r.Next(0, 255),
-                    Target = new Vector2(r.Next(0, _map.Width), r.Next(0, _map.Height))
-                });
-            }
         }
 
+        private bool _clicked = false;
         public override void Update()
         {
             _playButton.Style.Enabled = _serverList.SelectedIndex != -1;
-            // Play button
-            if (_playButton.MouseDown)
+            if (_playButton.MouseDown && !_clicked)
             {
+                _clicked = true;
                 _menu.Style.Hidden = true;
                 _leaderBoard.Style.Hidden = false;
                 BeginConnect();
             }
             _map.DrawGrid = _gridCheck.Checked;
-            if (_siteButton.MouseDown) Process.Start("http://agar.io/");
-            if (_changesButton.MouseDown) Process.Start("http://agar.io/changelog.txt");
+            if (_siteButton.Clicked) Process.Start("http://agar.io/");
+            if (_changesButton.Clicked) Process.Start("http://agar.io/changelog.txt");
 
             base.Update();
         }
 
         public override void Draw()
         {
+            if (Keyboard.IsPressed(System.Windows.Forms.Keys.R)) _map.Rotation = 0;
+            if (Keyboard.IsPressed(System.Windows.Forms.Keys.Q)) _map.Rotation -= 0.05f;
+            if (Keyboard.IsPressed(System.Windows.Forms.Keys.E)) _map.Rotation += 0.05f;
             base.Draw();
             Renderer.Draw("FPS: " + Renderer.FPS, Renderer.Width - 8, 0, _agarioLogo.Style.BackColor);
             Renderer.Draw(((ServerPacket)_latestMessage).ToString(), Renderer.Width - 8, 1, _agarioLogo.Style.BackColor);

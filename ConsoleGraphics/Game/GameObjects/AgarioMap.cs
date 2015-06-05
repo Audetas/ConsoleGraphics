@@ -17,27 +17,14 @@ namespace ConsoleGraphics.Game.GameObjects
             Center = Space.Camera.Position;
         }
 
+        public List<NodeData> Cells = new List<NodeData>();
         public bool DrawGrid = true;
-        public List<NodeData> Nodes = new List<NodeData>();
-        public float Scale = 9f;
+        public float Scale = 15f;
         public short Color = (short)ForeGround.Gray | (short)BackGround.WHITE;
-        private Random _r = new Random();
 
         public override void Update()
         {
             base.Update();
-
-            foreach (NodeData n in Nodes)
-            {
-                Vector2 pos = new Vector2((float)n.X, (float)n.Y);
-                if (pos.Distance(n.Target) <= 4f) 
-                    n.Target = new Vector2(_r.Next(0, Width), _r.Next(0, Height));
-
-                Vector2 dir = (n.Target - pos).Normalize();
-                dir *= 1.5f / (float)n.Size;
-                n.X += dir.X;
-                n.Y += dir.Y;
-            }
         } 
 
         public override void Draw()
@@ -53,13 +40,11 @@ namespace ConsoleGraphics.Game.GameObjects
                         Renderer.Draw(this, ".", x, (int)y, Color);
             }
 
-            foreach (NodeData n in Nodes)
+            foreach (NodeData cell in Cells.ToArray())
             {
-                Renderer.FillCircle(this, (int)n.X, (int)n.Y, (float)n.Size - 1f, '░', (short)(n.Red + n.Green + n.Blue));
-                Renderer.DrawCircle(this, (int)n.X, (int)n.Y, (float)n.Size, ' ', (short)(n.Red + n.Green + n.Blue));
+                Renderer.FillCircle(this, cell.X, cell.Y, cell.Size - 1f, '░', (short)(cell.Red * cell.Green * cell.Blue));
+                Renderer.DrawCircle(this, cell.X, cell.Y, cell.Size, ' ', (short)(cell.Red * cell.Green * cell.Blue));
             }
-
-            Renderer.FillCircle(this, (int)Center.X, (int)Center.Y, 10f, '░', (short)BackGround.Black);
         }
     }
 }
